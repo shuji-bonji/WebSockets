@@ -1,7 +1,7 @@
 # WebSocket 学習カリキュラム（詳細版）
 
 ## 📚 カリキュラム概要
-**総学習時間**: 約45-55時間  
+**総学習時間**: 約47-57時間  
 **対象者**: TypeScript/JavaScript中級者、Svelte学習者、PWA・リアルタイム通信に興味がある開発者  
 **最終目標**: WebSocketを使ったモダンなリアルタイムWebアプリケーション（PWA対応）の設計・実装ができる
 
@@ -11,6 +11,7 @@
 - テスト: Vitest + Playwright
 - PWA: Service Worker + WebSocket統合
 
+---
 
 ## 1. WebSocket 入門（学習時間: 3-4時間）
 
@@ -41,10 +42,23 @@
   - 既存WebSocketアプリの通信パターン分析
   - 自分のプロジェクトでの適用可能性検討
 
+---
 
-## 2. WebSocket を取り巻くネットワーク技術（学習時間: 5-6時間）
+## 2. WebSocket を取り巻くネットワーク技術（学習時間: 6.5-7.5時間）
 
-### 2.1 OSI参照モデルとWebSocketの位置（1時間）
+### 2.1 WebSocketを理解するためのHTTP基礎（45分）
+- **学習内容**
+  - HTTP/1.0 vs HTTP/1.1の接続管理の違い（概要）
+  - HTTP/1.0: リクエスト/レスポンス毎にTCP接続開閉
+  - HTTP/1.1: 持続的接続（Keep-Alive）による効率化
+  - WebSocketがHTTP/1.1の持続的接続を前提とする理由
+- **演習**
+  - HTTP/1.0とHTTP/1.1の接続パターン比較
+  - cURLコマンドでの接続ヘッダー確認
+- **参考学習**
+  - 詳細なHTTPアーキテクチャーは「Webアーキテクチャープロジェクト」で体系的に学習
+
+### 2.2 OSI参照モデルとWebSocketの位置（1時間）
 - **学習内容**
   - OSI 7層モデルの復習
   - WebSocket（セッション層）とSocket（トランスポート層）の違い
@@ -53,26 +67,53 @@
   - Wiresharkを使ったパケット解析
   - WebSocketハンドシェイクの詳細観察
 
-### 2.2 HTTP/1.1からHTTP/3までのWebSocket対応（2時間）
+### 2.3 HTTP/1.1からHTTP/3までのWebSocket対応（2時間）
 - **学習内容**
-  - **HTTP/1.1**: 従来のWebSocketハンドシェイク
-  - **HTTP/2**: WebSocketとの関係、HTTP/2 over WebSocketの制限
-  - **HTTP/3 (QUIC)**: WebSocketの将来性、WebTransport APIとの比較
-  - 各バージョンでのパフォーマンス特性
+  - **HTTP/1.1（60分）**: WebSocketハンドシェイクの基礎（必須）
+    - WebSocket Upgradeリクエスト/レスポンスの詳細
+    - 持続的接続を前提としたWebSocket確立
+    - 現在でも約25-30%のトラフィックで使用される基礎プロトコル
+  - **HTTP/2（45分）**: 現在の主流環境での動作理解（重要）
+    - HTTP/2環境でのWebSocket動作（約70%以上のトラフィック）
+    - HTTP/2 over WebSocketの制限と課題
+    - 多重化とWebSocketの相互作用
+  - **HTTP/3（15分）**: 将来動向とWebTransport API（参考）
+    - HTTP/3 (QUIC)でのWebSocketの位置づけ
+    - WebTransport APIとの比較・将来性
+    - 現在の限定的普及状況
 - **演習**
   - 各HTTPバージョンでのWebSocket接続テスト
-  - パフォーマンス比較測定
+  - パフォーマンス比較測定（HTTP/1.1 vs HTTP/2での差異）
+  - HTTP/3対応サービスでの動作確認
 
-### 2.3 WebSocket接続確立プロセス（1-2時間）
+### 2.4 WebSocket接続確立プロセス（1.5-2.5時間）
 - **学習内容**
-  - HTTP/1.1 Upgradeハンドシェイクの詳細
-  - WebSocketキーの生成と検証
-  - プロトコルネゴシエーション
+  - **End to End vs Hop by Hop通信の基礎（30分）**
+    - End to End: クライアント⇔サーバー間で直接関係（暗号化、認証）
+    - Hop by Hop: 各中継点で個別処理（プロキシ、ロードバランサー）
+    - WebSocketハンドシェイクでの適用例
+  - **HTTP/1.1 Upgradeハンドシェイクの詳細（60-90分）**
+    - WebSocketキーの生成と検証
+    - プロトコルネゴシエーション
+    - Connection: Upgradeヘッダーの仕組み（Hop by Hop）
+    - Sec-WebSocket-Key/Acceptの交換（End to End）
+  - **プロキシ・ファイアウォール環境での動作（30分）**
+    - HTTP CONNECTメソッドによるトンネル確立
+    - 企業環境でのWebSocket実装課題
 - **演習**
   - `curl`コマンドでWebSocketハンドシェイクを手動実行
   - ハンドシェイクヘッダーの検証実装
+  - プロキシ環境でのWebSocket接続テスト
+  ```bash
+  # HTTP/1.1 WebSocketハンドシェイクの例
+  curl -i -N -H "Connection: Upgrade" \
+       -H "Upgrade: websocket" \
+       -H "Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw==" \
+       -H "Sec-WebSocket-Version: 13" \
+       http://localhost:8080/websocket
+  ```
 
-### 2.4 セキュリティとポート管理（1時間）
+### 2.5 セキュリティとポート管理（1時間）
 - **学習内容**
   - ws（ポート80）とwss（ポート443）の違い
   - Originチェックとセキュリティ
@@ -82,6 +123,7 @@
   - wss接続の設定と証明書管理
   - Originチェックの実装
 
+---
 
 ## 3. WebSocket の基本構造と仕組み（学習時間: 5-6時間）
 
@@ -114,6 +156,7 @@
   - Node.js + TypeScriptでWebSocketサーバー実装
   - 複数クライアント接続管理
 
+---
 
 ## 4. WebSocket 接続の開始と基本操作（学習時間: 4-5時間）
 
@@ -162,6 +205,7 @@
   - 堅牢な再接続ロジックの実装
   - 接続状態インジケーターの作成
 
+---
 
 ## 5. WebSocket API の使用（学習時間: 6-7時間）
 
@@ -220,6 +264,7 @@
   - 配送失敗時の再送機能
   - ハートビート機能の実装
 
+---
 
 ## 6. WebSocket データフレームの仕組み（学習時間: 3-4時間）
 
@@ -241,6 +286,7 @@
   - 画像データのリアルタイム送信
   - プロトコルバッファの実装
 
+---
 
 ## 7. WebSocket 高度なトピック（学習時間: 10-12時間）
 
@@ -307,6 +353,7 @@
   - カスタムプロトコルの設計・実装
   - メッセージルーティングシステム
 
+---
 
 ## 8. テスト手法（学習時間: 5-6時間）
 
@@ -353,6 +400,7 @@
   - リアルタイムチャット機能のE2Eテスト実装
   - オフライン・オンライン切り替えテスト
 
+---
 
 ## 9. 他技術との比較・使い分け（学習時間: 3-4時間）
 
@@ -374,6 +422,7 @@
   - 技術選定マトリックスの作成
   - 既存プロジェクトへの適用可能性評価
 
+---
 
 ## 10. 実践演習プロジェクト（学習時間: 12-18時間）
 
@@ -419,6 +468,7 @@
   - SvelteKitでのSSR + クライアント側リアルタイム処理
   - Service Workerでのオフライン対応
 
+---
 
 ## 📋 学習リソース・参考資料
 
@@ -445,11 +495,14 @@
 - **監視**: Socket.IO Admin UI
 - **PWA**: Lighthouse, PWA Builder
 
+---
 
 ## 🎯 習得目標チェックリスト
 
 - [ ] WebSocketの基本概念と適用場面を説明できる
 - [ ] HTTP/1.1、HTTP/2、HTTP/3でのWebSocket対応の違いを理解している
+- [ ] End to End通信とHop by Hop通信の違いを理解している
+- [ ] WebSocketハンドシェイクのEnd to End/Hop by Hop要素を識別できる
 - [ ] TypeScriptでWebSocketクライアントを実装できる
 - [ ] SvelteKitでリアルタイムWebアプリケーションを構築できる
 - [ ] Svelteストアを使ったWebSocket状態管理ができる
