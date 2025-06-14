@@ -1,7 +1,7 @@
 # WebSocket 学習カリキュラム（詳細版）
 
 ## 📚 カリキュラム概要
-**総学習時間**: 約47-57時間  
+**総学習時間**: 約52-65時間  
 **対象者**: TypeScript/JavaScript中級者、Svelte学習者、PWA・リアルタイム通信に興味がある開発者  
 **最終目標**: WebSocketを使ったモダンなリアルタイムWebアプリケーション（PWA対応）の設計・実装ができる
 
@@ -12,7 +12,7 @@
 - PWA: Service Worker + WebSocket統合
 
 
-## 1. WebSocket 入門（学習時間: 3-4時間）
+## 1. WebSocket 入門（学習時間: 5-7時間）
 
 ### 1.1 WebSocketとは何か（1時間）
 - **学習内容**
@@ -32,14 +32,48 @@
   - ポーリングとWebSocketのパフォーマンス比較
   - ネットワークトラフィックの測定と分析
 
-### 1.3 WebSocketの利用例と適用場面（1-2時間）
+### 1.3 WebSocketの利用例と適用場面（2-3時間）
 - **学習内容**
-  - **適している場面**: チャットアプリ、株価表示、オンラインゲーム、コラボ編集
-  - **適さない場面**: 静的コンテンツ配信、一方向データ取得
-  - 実際のサービス事例研究
+  - **WebSocketの11の主要カテゴリー分析**
+    - リアルタイム通信（チャット、Discord、サポートチャット）
+    - 共同編集（Google Docs風、コード共同編集）
+    - 通知・アラート（在庫更新、リアルタイムアラート）
+    - データ配信（株価、為替、スポーツスコア）
+    - IoT連携（スマートホーム、センサー通知）
+    - PWA統合（オフライン対応、Service Worker連携）
+    - Webベースシミュレーション（教育用、マルチユーザ動作）
+    - バックエンド連携（GraphQL Subscriptions、RPC風通信）
+    - セキュリティ・監査（認証セッション監視、強制ログアウト）
+    - 金融・医療（オーダー処理、患者モニタリング）
+    - VR/メタバース（アバター状態同期、ルーム移動）
+  - **アーキテクチャ構成例の理解**
+    - 各用途での技術スタック構成
+    - 中継システム（Redis Pub/Sub）の活用
+    - 認証・セキュリティの統合パターン
+  - **適さない場面の理解**: 静的コンテンツ配信、一方向データ取得
 - **演習**
-  - 既存WebSocketアプリの通信パターン分析
+  - 11カテゴリーからの適用場面選択演習
+  - アーキテクチャ構成図の作成
+  - 既存WebSocketアプリの分類・分析
   - 自分のプロジェクトでの適用可能性検討
+
+### 1.4 WebSocket vs WebTransport 比較理解（1時間）
+- **学習内容**
+  - **WebTransportの位置づけ**
+    - HTTP/3（QUIC）ベースの次世代通信
+    - WebSocketの「完全な代替ではない」現実的理解
+    - 複数ストリーム同時利用、信頼性選択可能
+  - **使い分けの判断基準**
+    - WebSocket適用場面：チャット、通知、軽量リアルタイム通信
+    - WebTransport適用場面：ゲーム、メディア配信、高性能通信
+    - ブラウザ対応状況と実用性の考慮
+  - **将来動向の理解**
+    - WebTransportの普及予測
+    - 既存WebSocketシステムの移行判断
+- **演習**
+  - 具体的な用途でのWebSocket vs WebTransport選択演習
+  - 現在のブラウザ対応状況調査
+  - 移行コスト・メリット分析
 
 
 ## 2. WebSocket を取り巻くネットワーク技術（学習時間: 6.5-7.5時間）
@@ -260,7 +294,7 @@
   - ハートビート機能の実装
 
 
-## 6. WebSocket データフレームの仕組み（学習時間: 3-4時間）
+## 6. WebSocket データフレームの仕組み（学習時間: 6-7時間）
 
 ### 6.1 WebSocketフレーム構造（1-2時間）
 - **学習内容**
@@ -279,6 +313,46 @@
 - **演習**
   - 画像データのリアルタイム送信
   - プロトコルバッファの実装
+
+### 6.3 WebSocketサブプロトコルの設計（2-3時間）
+- **学習内容**
+  - **サブプロトコルの重要性**
+    - WebSocket = 双方向通信の「配管」
+    - サブプロトコル = 「データの形式・ルール」
+    - 真の価値はサブプロトコル設計にある
+  - **標準サブプロトコルの活用**
+    - `graphql-ws`: GraphQL Subscriptions
+    - `mqtt`: IoT向け軽量Pub/Sub通信
+    - `json-rpc`: 双方向リモート呼び出し
+    - `wamp`: Web Application Messaging Protocol
+  - **独自サブプロトコルの設計指針**
+    - メッセージタイプの定義（type, payload パターン）
+    - JSON Schema による形式定義
+    - バージョニング戦略
+    - エラーハンドリング設計
+  - **用途別サブプロトコル選択**
+    - チャット: 独自設計（アプリ固有要件）
+    - GraphQL API: `graphql-ws`（標準化、ツール豊富）
+    - IoT通信: `mqtt`（軽量、pub/sub）
+    - RPC: `json-rpc`（構造化、双方向）
+- **演習**
+  ```typescript
+  // 独自チャットプロトコルの設計演習
+  interface ChatMessage {
+    type: 'message' | 'join' | 'leave' | 'typing';
+    user: string;
+    room: string;
+    content?: string;
+    timestamp: number;
+    version: string;
+  }
+  
+  // サブプロトコル指定での接続
+  const ws = new WebSocket('wss://chat.example.com', 'myapp-chat-v1');
+  ```
+  - 3つの異なる用途での独自プロトコル設計
+  - 標準サブプロトコル（graphql-ws）の実装
+  - プロトコルバージョニングの実装
 
 
 ## 7. WebSocket 高度なトピック（学習時間: 10-12時間）
@@ -414,15 +488,29 @@
   - 既存プロジェクトへの適用可能性評価
 
 
-## 10. 実践演習プロジェクト（学習時間: 12-18時間）
+## 10. 実践演習プロジェクト（学習時間: 15-20時間）
 
-### 10.1 基礎プロジェクト: PWA対応リアルタイムチャット（6-8時間）
+### 10.1 基礎プロジェクト: PWA対応リアルタイムチャット（7-10時間）
 - **機能要件**
   - ユーザー認証（JWT）
   - リアルタイムメッセージ送受信
   - オンラインユーザー表示
   - メッセージ履歴
   - **PWA機能**: オフライン対応、プッシュ通知、アプリインストール
+- **サブプロトコル設計重視のアプローチ**
+  ```typescript
+  // 1. プロトコル設計から開始
+  interface ChatProtocol {
+    message: { user: string; content: string; room: string };
+    join: { user: string; room: string };
+    leave: { user: string; room: string };
+    typing: { user: string; room: string; isTyping: boolean };
+    userList: { room: string; users: string[] };
+  }
+  
+  // 2. サブプロトコル指定での接続
+  const ws = new WebSocket('wss://chat.example.com', 'myapp-chat-v1');
+  ```
 - **技術スタック**
   - フロントエンド: SvelteKit + TypeScript + PWA
   - バックエンド: Node.js + TypeScript + Socket.IO
@@ -439,24 +527,50 @@
     
     onMount(() => {
       if (browser) {
-        chatStore.connect();
+        // サブプロトコル指定で接続
+        chatStore.connect('myapp-chat-v1');
       }
     });
   </script>
   ```
 
-### 10.2 応用プロジェクト: リアルタイム共同編集システム（6-10時間）
+### 10.2 応用プロジェクト: リアルタイム共同編集システム（8-10時間）
 - **機能要件**
   - リアルタイム文書編集
   - カーソル位置共有
   - 変更履歴管理
   - 競合解決
   - **PWA機能**: オフライン編集、同期復旧
+- **高度なサブプロトコル設計**
+  ```typescript
+  // CRDT対応の独自プロトコル設計
+  interface CollaborativeEditingProtocol {
+    operation: {
+      type: 'insert' | 'delete' | 'retain';
+      position: number;
+      content?: string;
+      length?: number;
+      authorId: string;
+      timestamp: number;
+    };
+    cursor: {
+      authorId: string;
+      position: number;
+      selection?: { start: number; end: number };
+    };
+    sync: {
+      documentId: string;
+      operations: Operation[];
+      version: number;
+    };
+  }
+  ```
 - **技術的チャレンジ**
   - Operational Transform/CRDTsの実装
   - 大量データの効率的同期
   - SvelteKitでのSSR + クライアント側リアルタイム処理
   - Service Workerでのオフライン対応
+  - 独自サブプロトコルでの複雑な状態管理
 
 
 ## 📋 学習リソース・参考資料
@@ -470,6 +584,7 @@
 ### 推奨ライブラリ
 - **フロントエンド**: SvelteKit, Socket.IO-client, ws
 - **バックエンド**: Socket.IO, ws (Node.js)
+- **サブプロトコル**: graphql-ws, mqtt.js, ws (custom protocols)
 - **テスト**: Vitest, @testing-library/svelte, Playwright
 - **PWA**: @vite-pwa/sveltekit, workbox
 
@@ -488,9 +603,15 @@
 ## 🎯 習得目標チェックリスト
 
 - [ ] WebSocketの基本概念と適用場面を説明できる
+- [ ] WebSocketの11の主要カテゴリーの用途を理解し適用判断ができる
 - [ ] HTTP/1.1、HTTP/2、HTTP/3でのWebSocket対応の違いを理解している
 - [ ] End to End通信とHop by Hop通信の違いを理解している
 - [ ] WebSocketハンドシェイクのEnd to End/Hop by Hop要素を識別できる
+- [ ] WebSocket vs WebTransportの使い分けを判断できる
+- [ ] 用途に応じた適切なサブプロトコルを選択できる
+- [ ] 独自サブプロトコルを設計・実装できる
+- [ ] 標準的なサブプロトコル（graphql-ws、mqtt等）を活用できる
+- [ ] プロトコルのバージョニング戦略を理解し実装できる
 - [ ] TypeScriptでWebSocketクライアントを実装できる
 - [ ] SvelteKitでリアルタイムWebアプリケーションを構築できる
 - [ ] Svelteストアを使ったWebSocket状態管理ができる

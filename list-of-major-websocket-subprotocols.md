@@ -12,6 +12,7 @@ WebSocket のサブプロトコルは、WebSocket 上で動作する「アプリ
 | `wamp` | Web Application Messaging Protocol。Pub/Sub と RPC 両方をサポート。 |
 | `json-rpc` | JSON-RPC over WebSocket。双方向のリモート呼び出しを可能にする。 |
 | `soap` | SOAP over WebSocket。企業向けレガシー連携用。 |
+| `stomp` | Streaming Text Oriented Messaging Protocol。主にメッセージングミドルウェア（例：ActiveMQ, RabbitMQ）と接続するために使われる。 |
 | `cbor` / `msgpack` | バイナリフォーマットによる高効率通信。独自実装に利用。 |
 | `custom-protocol` | アプリ固有の独自プロトコル（例: `myapp-chat`）を定義可能。 |
 
@@ -85,6 +86,26 @@ graph TD
 #### 備考
 - 独自プロトコルを定義し、サーバで `Sec-WebSocket-Protocol` を検証
 - WebSocketライブラリでハンドリングを実装（Node.jsの `ws` など）
+
+
+---
+
+### 5. メッセージングブローカー連携（`stomp`）
+
+#### ユースケース
+チャットアプリ、通知システム、バックエンド間連携など、メッセージキューを利用する構成。
+
+#### 構成図（Mermaid）
+```mermaid
+graph TD
+  Client["Web Client (JS + stomp.js)"] -- STOMP over WebSocket --> Broker["Message Broker (e.g., RabbitMQ, ActiveMQ)"]
+  Broker --> Worker[Consumer/Worker Services]
+```
+
+#### 備考
+- STOMP over WebSocket は `Sec-WebSocket-Protocol: stomp` を指定
+- RabbitMQ などのメッセージブローカーは STOMP を WebSocket 経由で提供可能
+- クライアントには `@stomp/stompjs` ライブラリを利用
 
 
 ## 📝 備考
